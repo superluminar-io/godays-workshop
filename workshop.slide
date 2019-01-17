@@ -178,7 +178,7 @@ You configure a Serverless project using `serverless.yml`.
          "Content-Type": "application/json"
      },
      "multiValueHeaders": null,
-     "body": "{\"message\":\"Go Serverless v1.0! Your function executed successfully!\",\"requestBody\":\"\",\"requestHeaders\":null}"
+     "body": '{"message":"...","requestBody":"","requestHeaders":null}'
  }
 
 * Where are our logs?
