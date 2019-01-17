@@ -38,3 +38,26 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
  	"github.com/aws/aws-sdk-go/service/dynamodb"
  )
 .code ./create-url/main.go 48,61
+
+* Creating a DynamoDB table with Cloudformation
+
+`serverless.yml` supports arbitrary Cloudformation resources under the `resources` key.
+
+ resources:
+   Resources:
+     DynamoDBTable:
+       Type: AWS::DynamoDB::Table
+       Properties:
+         TableName: url-shortener
+         KeySchema:
+           - AttributeName: "id"
+             KeyType: "HASH"
+         ProvisionedThroughput:
+           ReadCapacityUnits: "1"
+           WriteCapacityUnits: "1"
+         AttributeDefinitions:
+           - AttributeName: "id"
+             AttributeType: "S"
+
+* Give your Lambda functions permissions to access the DynamoDB table with IAM
+
