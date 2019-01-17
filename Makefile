@@ -1,4 +1,6 @@
-.PHONY: build clean deploy
+.PHONY: build clean deploy present
+
+GOPATH := $(shell go env GOPATH)
 
 build:
 	dep ensure -v
@@ -10,3 +12,9 @@ clean:
 
 deploy: clean build
 	sls deploy --verbose
+
+present: $(GOPATH)/bin/present
+	$(GOPATH)/bin/present
+
+$(GOPATH)/bin/present:
+	go get golang.org/x/tools/cmd/present
