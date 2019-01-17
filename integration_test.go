@@ -23,19 +23,14 @@ func uniqueUrl() string {
 	return fmt.Sprintf("https://godays.io?ts=%s", now)
 }
 
-func TestPutUrl(t *testing.T) {
-	// Look up the API gateway endpoint
-	//endpoint, ok := os.LookupEnv("ENDPOINT")
-	//if !ok {
-	//	t.Fatal("ENDPOINT not set")
-	//}
+func TestCreateUrl(t *testing.T) {
 	// Generate test data
 	data, _ := json.Marshal(map[string]string{"url": uniqueUrl()})
-	// Perform a HTTP PUT request
+	// Perform a HTTP POST request
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/create-url", *endpoint)
-	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(data))
-	assert.NoError(t, err, "Error while PUTTING data")
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+	assert.NoError(t, err, "Error while POSTing data")
 	res, err := client.Do(req)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, res.StatusCode, "Unexpected status code")
