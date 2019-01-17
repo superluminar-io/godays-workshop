@@ -101,24 +101,90 @@ You configure a Serverless project using `serverless.yml`.
 
 .code ./serverless.yml /package:/,/method:/
 
-* Wie sieht der Code aus?
+* What does it look like?
 
 .code ./hello/main.go /Handler/,$
 
-* Wie können wir eine Funktion aufrufen?
- $ serverless invoke -f hello
+* Handling incoming HTTP requests
+
+- Configure your function to react to the `POST` method
+
+.code ./serverless.yml /world/,$
+
+* Add HTTP request object to your func
+
+.code ./world/main.go /Handler/,$
+
+* Build and deploy
+
+ $ make
+ ...
+ $ sls deploy
+ Service Information
+ service: godays-workshop
+ stage: dev
+ region: eu-central-1
+ stack: godays-workshop-dev
+ api keys:
+   None
+ endpoints:
+   GET - https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/hello
+   POST - https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/world
+ functions:
+   hello: godays-workshop-dev-hello
+   world: godays-workshop-dev-world
+ layers:
+   None
+
+* Curl it again
+
+ $ curl -s -XPOST -d foo=bar https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/world | jq .
  {
-   "statusCode": 200,
-   "body": "{\"message\":\"Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!\",\"input\":{}}"
+   "message": "Go Serverless v1.0! Your function executed successfully!",
+   "requestBody": "foo=bar",
+   "requestHeaders": {
+     "Accept": "*/*",
+     "CloudFront-Forwarded-Proto": "https",
+     "CloudFront-Is-Desktop-Viewer": "true",
+     "CloudFront-Is-Mobile-Viewer": "false",
+     "CloudFront-Is-SmartTV-Viewer": "false",
+     "CloudFront-Is-Tablet-Viewer": "false",
+     "CloudFront-Viewer-Country": "DE",
+     "Host": "7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com",
+     "User-Agent": "curl/7.54.0",
+     "Via": "2.0 41232b1248b5064ae14550b383a46695.cloudfront.net (CloudFront)",
+     "X-Amz-Cf-Id": "Fw5dIivFMFTS_62EO1xvrRWqpvtaaTqbnPQp10AKIIZYI-gVGJOxSg==",
+     "X-Amzn-Trace-Id": "Root=1-5c404a1b-c4cec7215afa931529d7c60c",
+     "X-Forwarded-For": "213.61.151.75, 70.132.42.147",
+     "X-Forwarded-Port": "443",
+     "X-Forwarded-Proto": "https",
+     "content-type": "application/x-www-form-urlencoded"
+   }
  }
 
-* Wie kommen wir an Logs?
-- Logs werden von `CloudWatch Logs` verwaltet
-- Jede Lambda-Funktion loggt in eine `LogGroup`
+* Invoking a function directly
+
+ $ sls invoke -f world
+ {
+     "statusCode": 200,
+     "headers": {
+         "Content-Type": "application/json"
+     },
+     "multiValueHeaders": null,
+     "body": "{\"message\":\"Go Serverless v1.0! Your function executed successfully!\",\"requestBody\":\"\",\"requestHeaders\":null}"
+ }
+
+* Where are our logs?
+- Logs are aggregated via `Cloudwatch Logs`
+- Each Lambda function logs into its own `LogGroup`
+- Anything you write on `STDOUT` shows up in the logs
+
  $ serverless logs -r eu-central-1 -f hello
  START RequestId: 9847ec27-1381-11e9-83e5-638bc1812824 Version: $LATEST
  END RequestId: 9847ec27-1381-11e9-83e5-638bc1812824
  REPORT RequestId: 9847ec27-1381-11e9-83e5-638bc1812824	Duration: 7.57 ms	Billed Duration: 100 ms 	Memory Size: 1024 MB	Max Memory Used: 46 MB
+
+
 
 * Gibt es auch Metriken?
 - Metriken werden in `CloudWatch` gesammelt

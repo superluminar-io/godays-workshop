@@ -23,4 +23,4 @@ functions:
     events:
       - http:
           path: world
-          method: get
+          method: post
