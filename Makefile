@@ -1,4 +1,4 @@
-.PHONY: build clean deploy present
+.PHONY: build clean deploy present integration-test
 
 GOPATH := $(shell go env GOPATH)
 
@@ -15,6 +15,9 @@ deploy: clean build
 
 present: $(GOPATH)/bin/present
 	$(GOPATH)/bin/present
+
+integration-test:
+	go test -integrationTest -endpoint=$(shell sls info -v | awk '/ServiceEndpoint/ { print $$2 }')
 
 $(GOPATH)/bin/present:
 	go get golang.org/x/tools/cmd/present
