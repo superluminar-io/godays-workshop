@@ -83,14 +83,14 @@ serverless invoke -f hello
 ## Lab 2 - Making changes
 
 Modify the `hello` function to take a query parameter and print a friendly greeting.
-
 ```
-curl https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/hello?name=Jan
-Hello Jan
+ENDPOINT=$(sls info -v | grep ServiceEndpoint: | cut -d ' ' -f2)
+curl ${ENDPOINT}/hello?name=World
+Hello World
 ```
 
 Hint:
-- Have a look at `events.APIGatewayProxyResponse` [signature](https://github.com/aws/aws-lambda-go/blob/master/events/apigw.go#L6)
+- Have a look at `events.APIGatewayProxyRequest` [signature](https://github.com/aws/aws-lambda-go/blob/master/events/apigw.go#L6)
 - Use `fmt.Println` or `log.Info` for logging
 - Use `serverless logs` for debugging
 - [Serverless AWS Docs](https://serverless.com/framework/docs/providers/aws/)
