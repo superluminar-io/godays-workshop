@@ -106,7 +106,7 @@ Test what happens when your GET /{short-url} handler can't find the short url in
 
 ### Example: How to mock AWS SDK
 
-```
+```go
 package main
 
 import (
