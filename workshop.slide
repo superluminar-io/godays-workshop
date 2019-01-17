@@ -4,12 +4,19 @@ Using AWS Lambda with Go
 
 superluminar GmbH
 
+* Prequisites
+
+- Go installation
+- Node installation
+- Working AWS credentials
+
 * Install serverless
 
  $ npm install -g serverless
 
 * Our first application
 
+ $ cd $GOPATH/src
  $ serverless create -t aws-go-dep -p godays-workshop
  Serverless: Generating boilerplate...
  Serverless: Generating boilerplate in "/Users/jan/Code/src/github.com/superluminar-io/godays-workshop"
