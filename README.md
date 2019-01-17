@@ -34,7 +34,14 @@ $ aws sts get-caller-identity
 
 ### Bootstrap serverless app
 
-First we bootstrap the Serverless "Hello World" example.
+First we install the [serverless](https://serverless.com/framework/docs/getting-started/) command line tool.
+This tool allows us to build and deploy [Serverless](https://en.wikipedia.org/wiki/Serverless_computing) functions.
+
+```
+npm install -g serverless
+```
+
+Now we bootstrap the Serverless "Hello World" example.
 Change directories into your `$GOPATH` and create the usual Go boilerplate.
 
 ```
