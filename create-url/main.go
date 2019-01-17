@@ -45,7 +45,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		log.WithField("error", err).Error("Malformed URL")
 		return events.APIGatewayProxyResponse{Body: "Malformed URL", StatusCode: 400}, nil
 	}
+	// Create a new AWS session and fail immediately on error
 	sess := session.Must(session.NewSession())
+	// Create the DynamoDB client
 	dynamodbclient := dynamodb.New(sess)
 	_, err = dynamodbclient.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(os.Getenv("DYNAMO_DB_TABLE")),

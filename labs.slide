@@ -32,4 +32,9 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
 - Using path parameters with API Gateway and Lambda
 
 * Using DynamoDB via the aws-sdk-go
-
+ import (
+ 	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/aws/aws-sdk-go/aws/session"
+ 	"github.com/aws/aws-sdk-go/service/dynamodb"
+ )
+.code ./create-url/main.go 48,61
