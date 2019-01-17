@@ -1,0 +1,130 @@
+GoDays
+Using AWS Lambda with Go
+29 Jan 2019
+
+superluminar GmbH
+
+* Install serverless
+
+ $ npm install -g serverless
+
+* Our first application
+
+ $ serverless create -t aws-go-dep -p godays-workshop
+ Serverless: Generating boilerplate...
+ Serverless: Generating boilerplate in "/Users/jan/Code/src/github.com/superluminar-io/godays-workshop"
+  _______                             __
+ |   _   .-----.----.--.--.-----.----|  .-----.-----.-----.
+ |   |___|  -__|   _|  |  |  -__|   _|  |  -__|__ --|__ --|
+ |____   |_____|__|  \___/|_____|__| |__|_____|_____|_____|
+ |   |   |             The Serverless Application Framework
+ |       |                           serverless.com, v1.35.1
+  -------'
+ 
+ Serverless: Successfully generated boilerplate for template: "aws-go-dep"
+
+* Abhängigkeiten installieren
+  
+  $ npm install
+  ...
+  added 437 packages from 360 contributors and audited 5307 packages in 7.673s
+  found 0 vulnerabilities
+
+* Einfach deployen!
+
+ $ serverless deploy
+ Serverless: Bundling with Webpack...
+ Serverless: Packaging service...
+ Serverless: Creating Stack...
+ Serverless: Checking Stack create progress...
+ Serverless: Stack create finished...
+ Serverless: Uploading CloudFormation file to S3...
+ Serverless: Uploading artifacts...
+ Serverless: Uploading service .zip file to S3 (68.71 KB)...
+ Serverless: Validating template...
+ Serverless: Updating Stack...
+ Serverless: Checking Stack update progress...
+ Serverless: Stack update finished...
+
+* Einfach deployen!
+ Service Information
+ service: serverless-app
+ stage: dev
+ region: us-east-1
+ stack: serverless-app-dev
+ api keys:
+   None
+ endpoints:
+   GET - https://4ks2oeieda.execute-api.us-east-1.amazonaws.com/dev/hello
+ functions:
+   hello: serverless-app-dev-hello
+ layers:
+   None
+
+* Mal schauen.
+ $ curl https://4ks2oeieda.execute-api.us-east-1.amazonaws.com/dev/hello | jq .message
+ "Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!"
+
+* Wie funktioniert das?
+Serverless-Projekte werden mittels `serverless.yml` konfiguriert.
+
+.code ./serverless.yml
+
+* Was sind Funktionen?
+- Funktionen haben einen Namen
+- Funktionen haben einen Handler, den Source-Code
+- Funktionen reagieren auf ein Event, z.B. einen HTTP-Request
+
+.code ./serverless.yml /functions:/,$
+
+* Wie sieht der Code aus?
+- Der Code befindet sich in `handler.ts`.
+- Verwendet wird die Funktion `hello`.
+
+.code ./hello/main.go
+
+* Wie können wir eine Funktion aufrufen?
+ $ serverless invoke -f hello
+ {
+   "statusCode": 200,
+   "body": "{\"message\":\"Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!\",\"input\":{}}"
+ }
+
+* Wie kommen wir an Logs?
+- Logs werden von `CloudWatch Logs` verwaltet
+- Jede Lambda-Funktion loggt in eine `LogGroup`
+ $ serverless logs -r eu-central-1 -f hello
+ START RequestId: 9847ec27-1381-11e9-83e5-638bc1812824 Version: $LATEST
+ END RequestId: 9847ec27-1381-11e9-83e5-638bc1812824
+ REPORT RequestId: 9847ec27-1381-11e9-83e5-638bc1812824	Duration: 7.57 ms	Billed Duration: 100 ms 	Memory Size: 1024 MB	Max Memory Used: 46 MB
+
+* Gibt es auch Metriken?
+- Metriken werden in `CloudWatch` gesammelt
+- Erfasst werden `Invocations`, `Errors`, `Duration` etc.
+.image ./images/cloudwatch.png 300 _
+.link https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html Lambda Metrics
+
+* Wie ist das ganze aufgebaut?
+.image ./images/simple-web-service.png
+.caption _Image_ by [[https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/][Jeremy Daly]]
+
+.link https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/ Entwurfsmuster
+
+* Serverless und Cloudformation
+Hinter den Kulissen verwendet Serverless `CloudFormation`.
+.image ./images/cloudformation-template-update-stack-designer.png 600 _
+
+* Unsere Anwendung wieder löschen
+
+ $ serverless remove
+ Serverless: Getting all objects in S3 bucket...
+ Serverless: Removing objects in S3 bucket...
+ Serverless: Removing Stack...
+ Serverless: Checking Stack removal progress...
+ ....................
+ Serverless: Stack removal finished...
+
+* 🎉 Das war's
+
+Danke ...
+
