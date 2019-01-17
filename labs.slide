@@ -1,0 +1,25 @@
+Labs
+Using AWS Lambda with Go
+29 Jan 2019
+
+superluminar GmbH
+
+* Lab 3
+
+Implement a URL shortener using `DynamoDB` for storage with two functions.
+
+- One function to create shortened URLs
+
+ curl -v -XPOST -d url=https://godays.io https://$ENDPOINT/create-url
+
+ > POST /create-url HTTP/1.1
+ < HTTP/1.1 Created 201
+ Created short url: http://$ENDPOINT/${short-url}
+
+- One function to retrieve and redirect to the shortened URL
+
+ curl -v http://$ENDPOINT/${short-url}
+
+ > GET /${short-url} HTTP/1.1
+ < HTTP/1.1 302 Found
+ < Location: https://godays.io
