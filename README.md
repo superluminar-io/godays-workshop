@@ -31,10 +31,36 @@ $ aws sts get-caller-identity
 
 ## Lab 1 - Basics
 
- - Bootstrap serverless
- - `serverless init`
+### Bootstrap serverless app
 
-Deploy serverless project
+First we bootstrap the Serverless "Hello World" example.
+```
+serverless create -t aws-go-dep -p godays-workshop
+```
+This will create an example app with the relevant configuration files and directory structure.
+
+### Build and deploy
+Since lambda requires us to provide the compiled binary, we have to build it beforehand.
+```
+make build
+```
+This compiles the functions `hello` and `world` and places the binaries in the `bin/` subdirectory.
+
+To deploy the functions and create the aws components (Lambda function, API Gateway, DNS Entries) we run:
+
+```
+serverless deploy
+```
+
+### Run the functions
+
+To run the function we can use either the HTTP endpoint (via API Gateway) or the Serverless.
+```
+ENDPOINT=$(sls info -v | grep ServiceEndpoint: | cut -d ' ' -f2)
+curl ${ENDPOINT}/hello
+
+serverless invoke -f hello
+```
 
 ## Lab 2 - Making changes
 
