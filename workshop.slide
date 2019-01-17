@@ -103,7 +103,7 @@ You configure a Serverless project using `serverless.yml`.
 
 * Wie sieht der Code aus?
 
-.code ./hello/main.go
+.code ./hello/main.go /Handler/,$
 
 * Wie können wir eine Funktion aufrufen?
  $ serverless invoke -f hello
