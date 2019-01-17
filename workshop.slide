@@ -23,63 +23,85 @@ superluminar GmbH
  
  Serverless: Successfully generated boilerplate for template: "aws-go-dep"
 
-* Abhängigkeiten installieren
-  
-  $ npm install
-  ...
-  added 437 packages from 360 contributors and audited 5307 packages in 7.673s
-  found 0 vulnerabilities
+* Build it!
 
-* Einfach deployen!
+ $ make
+ dep ensure -v
+ Root project is "github.com/superluminar-io/godays-workshop"
+  2 transitively valid internal packages
+  2 external packages imported from 1 projects
+ (0)   ✓ select (root)
+ (1)	? attempt github.com/aws/aws-lambda-go with 2 pkgs; 14 versions to try
+ (1)	    try github.com/aws/aws-lambda-go@v1.8.1
+ (1)	✓ select github.com/aws/aws-lambda-go@v1.8.1 w/4 pkgs
+   ✓ found solution with 4 packages from 1 projects
 
- $ serverless deploy
- Serverless: Bundling with Webpack...
+ Solver wall times by segment:
+   ...
+
+   TOTAL: 1.805310905s
+
+ (1/1) Wrote github.com/aws/aws-lambda-go@v1.8.1
+ env GOOS=linux go build -ldflags="-s -w" -o bin/hello hello/main.go
+ env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
+
+* Deploy it!
+ $ severless deploy
  Serverless: Packaging service...
+ Serverless: Excluding development dependencies...
  Serverless: Creating Stack...
  Serverless: Checking Stack create progress...
+ .....
  Serverless: Stack create finished...
  Serverless: Uploading CloudFormation file to S3...
  Serverless: Uploading artifacts...
- Serverless: Uploading service .zip file to S3 (68.71 KB)...
+ Serverless: Uploading service .zip file to S3 (10.78 MB)...
  Serverless: Validating template...
  Serverless: Updating Stack...
  Serverless: Checking Stack update progress...
- Serverless: Stack update finished...
 
-* Einfach deployen!
- Service Information
- service: serverless-app
- stage: dev
- region: us-east-1
- stack: serverless-app-dev
- api keys:
-   None
- endpoints:
-   GET - https://4ks2oeieda.execute-api.us-east-1.amazonaws.com/dev/hello
- functions:
-   hello: serverless-app-dev-hello
- layers:
-   None
+* Deploy it!
+  Serverless: Stack update finished...
+  Service Information
+  service: godays-workshop
+  stage: dev
+  region: eu-central-1
+  stack: godays-workshop-dev
+  api keys:
+    None
+  endpoints:
+    GET - https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/hello
+    GET - https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/world
+  functions:
+    hello: godays-workshop-dev-hello
+    world: godays-workshop-dev-world
+  layers:
+    None
 
-* Mal schauen.
- $ curl https://4ks2oeieda.execute-api.us-east-1.amazonaws.com/dev/hello | jq .message
- "Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!"
+* Curl it!
+ $ curl https://7gxzpfmtk5.execute-api.eu-central-1.amazonaws.com/dev/hello
+ {"message":"Go Serverless v1.0! Your function executed successfully!"}%
 
-* Wie funktioniert das?
-Serverless-Projekte werden mittels `serverless.yml` konfiguriert.
+* How does it work?
+You configure a Serverless project using `serverless.yml`.
 
-.code ./serverless.yml
+.code ./serverless.yml 1,20
 
-* Was sind Funktionen?
-- Funktionen haben einen Namen
-- Funktionen haben einen Handler, den Source-Code
-- Funktionen reagieren auf ein Event, z.B. einen HTTP-Request
+* What are functions?
+- Functions have a name
+- Functions have a handler - the executable
+- Functions are triggered by events - e.g. the HTTP request
 
 .code ./serverless.yml /functions:/,$
 
+* Where is the code?
+
+- We include the compiled binaries
+- We exclude everything else (the source code)
+
+.code ./serverless.yml /package:/,/method:/
+
 * Wie sieht der Code aus?
-- Der Code befindet sich in `handler.ts`.
-- Verwendet wird die Funktion `hello`.
 
 .code ./hello/main.go
 
