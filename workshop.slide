@@ -205,17 +205,31 @@ You configure a Serverless project using `serverless.yml`.
 .image ./images/cloudwatch.png 300 _
 .link https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html Lambda Metrics
 
-* Wie ist das ganze aufgebaut?
+* The underlying architecture
 .image ./images/simple-web-service.png
 .caption _Image_ by [[https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/][Jeremy Daly]]
 
-.link https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/ Entwurfsmuster
+.link https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/ Serverless Design Patterns
 
-* Serverless und Cloudformation
-Hinter den Kulissen verwendet Serverless `CloudFormation`.
+* Serverless and Cloudformation
+
+- Behind the scenes `Serverless` uses `Cloudformation`
+- All state goes into the `.serverless` folder
+
+ $ tree .serverless
+ .serverless
+ ├── cloudformation-template-create-stack.json # Cloudformation stacks
+ ├── cloudformation-template-update-stack.json
+ ├── godays-workshop.zip # Our zipped up binaries
+ └── serverless-state.json
+
+ 0 directories, 4 files
+
+* The Cloudformation stack
+
 .image ./images/cloudformation-template-update-stack-designer.png 600 _
 
-* Unsere Anwendung wieder löschen
+* Deleting our application
 
  $ serverless remove
  Serverless: Getting all objects in S3 bucket...
@@ -224,8 +238,4 @@ Hinter den Kulissen verwendet Serverless `CloudFormation`.
  Serverless: Checking Stack removal progress...
  ....................
  Serverless: Stack removal finished...
-
-* 🎉 Das war's
-
-Danke ...
 
