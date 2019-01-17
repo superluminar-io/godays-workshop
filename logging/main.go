@@ -10,7 +10,7 @@ import (
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler() (events.APIGatewayProxyResponse, error) {
-	fmt.Print("Hi, this ends up in the logs.")
+	fmt.Println("Hi, this ends up in the logs.")
 	log.Print("This will also end up in the logs.")
 	resp := events.APIGatewayProxyResponse{
 		StatusCode: 200,
