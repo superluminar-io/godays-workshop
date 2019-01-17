@@ -1,7 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
+	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -9,16 +10,11 @@ import (
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler() (events.APIGatewayProxyResponse, error) {
-	data, err := json.Marshal(map[string]interface{}{
-		"message": "Go Serverless v1.0! Your function executed successfully!",
-	})
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500}, err
-	}
-
+	fmt.Println("Hi, this ends up in the logs.")
+	log.Print("This will also end up in the logs.")
 	resp := events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body:       string(data),
+		Body:       "OK",
 		Headers: map[string]string{
 			"Content-Type": "application/json",
 		},

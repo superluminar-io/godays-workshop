@@ -175,6 +175,7 @@ You configure a Serverless project using `serverless.yml`.
  }
 
 * Where are our logs?
+
 - Logs are aggregated via `Cloudwatch Logs`
 - Each Lambda function logs into its own `LogGroup`
 - Anything you write on `STDOUT` shows up in the logs
@@ -184,11 +185,23 @@ You configure a Serverless project using `serverless.yml`.
  END RequestId: 9847ec27-1381-11e9-83e5-638bc1812824
  REPORT RequestId: 9847ec27-1381-11e9-83e5-638bc1812824	Duration: 7.57 ms	Billed Duration: 100 ms 	Memory Size: 1024 MB	Max Memory Used: 46 MB
 
+* An example
 
+.code ./logging/main.go 11,24
 
-* Gibt es auch Metriken?
-- Metriken werden in `CloudWatch` gesammelt
-- Erfasst werden `Invocations`, `Errors`, `Duration` etc.
+* The log output
+
+ $ serverless logs -f hello
+ START RequestId: 14d850c7-1315-4222-b11c-237fe3ac0a7e Version: $LATEST
+ Hi, this ends up in the logs.
+ 2019/01/17 09:43:36 This will also end up in the logs.
+ END RequestId: 14d850c7-1315-4222-b11c-237fe3ac0a7e
+ REPORT RequestId: 14d850c7-1315-4222-b11c-237fe3ac0a7e	Duration: 0.44 ms	Billed Duration: 100 ms 	Memory Size: 1024 MB	Max Memory Used: 22 MB
+
+* Where can I find metrics?
+- Metrics are collected in `CloudWatch`
+- Metrics recorded are `Invocations`, `Errors`, `Duration` etc.
+- You access these via the AWS console
 .image ./images/cloudwatch.png 300 _
 .link https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html Lambda Metrics
 
