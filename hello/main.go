@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -9,7 +8,7 @@ import (
 )
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (events.APIGatewayProxyResponse, error) {
+func Handler() (events.APIGatewayProxyResponse, error) {
 	data, err := json.Marshal(map[string]interface{}{
 		"message": "Go Serverless v1.0! Your function executed successfully!",
 	})
