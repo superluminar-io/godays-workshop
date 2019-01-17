@@ -4,6 +4,25 @@ Using AWS Lambda with Go
 
 superluminar GmbH
 
+* Lab 0 - Install dependencies
+
+- go
+- node
+- awscli
+- serverless
+
+* Lab 1
+
+- Bootstrap serverless app
+- Build and deploy the app
+- Run / invoke the functions
+
+* Lab 2
+
+- Modify `hello` function to accept a `name` parameter
+- Create some log messages
+- Find out how to display log messages
+
 * Lab 3
 
 Implement a URL shortener using `DynamoDB` for storage with two functions.
@@ -101,4 +120,8 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
              paths:
                short_url: true
 
+* Lab 4
 
+- Write a unit test to mock out AWS dependencies
+- Use `github.com/stretchr/testify/mock` (or what ever framework you prefer)
+- Test what happens when your handler can't find the short url in your storage
