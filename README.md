@@ -119,7 +119,7 @@ $ curl -v http://$ENDPOINT/${short-url}
 ```
 
 Here is an integration test you can run against your service to see if it works.
-- Download [integration_test.go]
+- Download [integration_test.go](https://raw.githubusercontent.com/superluminar-io/godays-workshop/master/integration_test.go)
 - Copy to root of your project
 - Run it with: `go test -integrationTest -endpoint=$(sls info -v | awk '/ServiceEndpoint/ { print $2 }')`
 
