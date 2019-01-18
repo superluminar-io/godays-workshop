@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"regexp"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -30,10 +33,33 @@ func TestCreateUrl(t *testing.T) {
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/create-url", *endpoint)
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
-	assert.NoError(t, err, "Error while POSTing data")
+	require.NoError(t, err, "Error while POSTing data")
 	res, err := client.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, res.StatusCode, "Unexpected status code")
+}
+
+func TestCreateAndGetUrl(t *testing.T) {
+	// Generate test data
+	urlToShorten := uniqueUrl()
+	data, _ := json.Marshal(map[string]string{"url": urlToShorten})
+	// Create the shortened URL
+	client := &http.Client{}
+	url := fmt.Sprintf("%s/create-url", *endpoint)
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+	require.NoError(t, err, "Error while POSTing data")
+	res, err := client.Do(req)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, res.StatusCode, "Unexpected status code")
+	// Retrieve the shortened URL
+	body, err := ioutil.ReadAll(res.Body)
+	require.NoError(t, err)
+	assert.Regexp(t, regexp.MustCompile("^https://"), string(body), "No URL in body")
+	shortUrl := string(body)
+	res, err = http.Get(shortUrl)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusFound, res.StatusCode, "Unexpected status code")
+	assert.Equal(t, urlToShorten, res.Location, "Unexpected location")
 }
 
 func TestMain(m *testing.M) {

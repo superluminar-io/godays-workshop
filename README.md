@@ -109,7 +109,7 @@ $ curl -v -XPOST -d url=https://godays.io https://$ENDPOINT/create-url
 
 > POST /create-url HTTP/1.1
 < HTTP/1.1 Created 201
-Created short url: http://$ENDPOINT/${short-url}
+Created short url: https://$ENDPOINT/${short-url}
 
 $ curl -v http://$ENDPOINT/${short-url}
 
@@ -117,6 +117,11 @@ $ curl -v http://$ENDPOINT/${short-url}
 < HTTP/1.1 302 Found
 < Location: https://godays.io
 ```
+
+Here is an integration test you can run against your service to see if it works.
+- Download [integration_test.go]
+- Copy to root of your project
+- Run it with: `go test -integrationTest -endpoint=$(sls info -v | awk '/ServiceEndpoint/ { print $2 }')`
 
 ### Hints
 
