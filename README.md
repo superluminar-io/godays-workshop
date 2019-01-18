@@ -136,12 +136,12 @@ Here is an integration test you can run against your service to see if it works.
 Use the [aws-sdk-go](https://aws.amazon.com/sdk-for-go/) to talk to DynamoDB. Find examples [here](https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/using-dynamodb-with-go-sdk.html).
 The code below sets up the SDK and issues a `PutItem` request.
 
-```
- import (
- 	"github.com/aws/aws-sdk-go/aws"
- 	"github.com/aws/aws-sdk-go/aws/session"
- 	"github.com/aws/aws-sdk-go/service/dynamodb"
- )
+```go
+import (
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+)
 // Create a new AWS session and fail immediately on error
 sess := session.Must(session.NewSession())
 // Create the DynamoDB client
