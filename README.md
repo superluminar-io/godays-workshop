@@ -130,6 +130,7 @@ Here is an integration test you can run against your service to see if it works.
 - Give your Lambda functions permissions to access the DynamoDB table with IAM
 - Inject the DynamoDB table via environment variables
 - Using path parameters with API Gateway and Lambda
+- Generate a short unique ID for the URL
 
 #### Use the aws-sdk-go with DynamoDB
 
@@ -215,7 +216,7 @@ resources:
 ```
 
 
-### Configure URL routing and request parameters
+#### Configure URL routing and request parameters
 
 For `GET /${short-url}` to work you need to configure path parameters for your function.
 In your `serverless.yml` add the following:
@@ -235,6 +236,23 @@ functions:
 ```
 
 Details can be found [here](https://serverless.com/framework/docs/providers/aws/events/apigateway#request-parameters).
+
+#### Generate a short unique ID for the URL
+
+To generate a short/unique ID you can use this function:
+
+```go
+// Shorten shortens a URL and will return an error if the URL does not validate.
+// The implementation is a bit naive but good enough for a show case.
+func Shorten(u string) (string, error) {
+	if _, err := url.ParseRequestURI(u); err != nil {
+		return "", err
+	}
+	hash := fnv.New64a()
+	hash.Write([]byte(u))
+	return strconv.FormatUint(hash.Sum64(), 36), nil
+}
+```
 
 ## Lab 4
 
