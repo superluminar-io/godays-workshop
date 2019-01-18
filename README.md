@@ -335,7 +335,7 @@ For each newly created short URL fetch a preview of the website and store it.
 DynamoDB supports listening to events via [streams](https://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/Streams.Lambda.html).
 To make use of this we must enable streaming on our table. Various `StreamViewTypes` exist. We only care about new data being written here:
 
-```
+```yaml
 resources:
   Resources:
     DynamoDBTable:
@@ -350,7 +350,7 @@ resources:
 To listen to events from DynamoDB you must change the [event type](https://serverless.com/framework/docs/providers/aws/events/streams/).
 This will subscribe the Lambda function to the DynamoDB stream.
 
-```
+```yaml
 functions:
   unfurl:
     handler: handler.unfurl
