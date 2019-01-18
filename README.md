@@ -161,7 +161,7 @@ if err != nil {
 
 `serverless.yml` supports arbitrary Cloudformation [resources](https://serverless.com/framework/docs/providers/aws/guide/resources/) under the `resources` key.
 
-```
+```yaml
 resources:
   Resources:
     DynamoDBTable:
@@ -184,7 +184,7 @@ Every AWS Lambda function needs permission to interact with other AWS infrastruc
 Permissions are set via an AWS IAM Role which is automatically created and is shared by all of your functions.
 You can set additional [permissions](https://serverless.com/framework/docs/providers/aws/guide/iam/) via the `serverless.yml` file:
 
-```
+```yaml
 provider:
   iamRoleStatements:
     -  Effect: "Allow"
@@ -202,7 +202,7 @@ provider:
 Use the twelve factor app pattern to [store config in the environment](https://12factor.net/config) to make the Lambda functions aware of your table.
 Make these settings in `serverless.yml`:
 
-```
+```yaml
 provider:
   environment: # Service wide environment variables
     DYNAMO_DB_TABLE:
@@ -220,7 +220,7 @@ resources:
 For `GET /${short-url}` to work you need to configure path parameters for your function.
 In your `serverless.yml` add the following:
 
-```
+```yaml
 functions:
   get-url:
     handler: bin/get-url
