@@ -1,7 +1,9 @@
 theme = "hugo-theme-learn"
-baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "superluminar - Go Serverless Workshop"
 
 [params]
 themeVariant = "blue"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
