@@ -32,3 +32,11 @@ $ aws sts get-caller-identity
 }
 ```
 
+## Install serverless via npm
+
+First we install the [serverless](https://serverless.com/framework/docs/getting-started/) command line tool.
+This tool allows us to build and deploy [Serverless](https://en.wikipedia.org/wiki/Serverless_computing) functions.
+
+```
+npm install -g serverless
+```
