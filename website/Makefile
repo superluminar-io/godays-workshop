@@ -33,7 +33,7 @@ hugo:
 develop: hugo ## Start a development server
 	./hugo serve -D
 
-.PHONY build
+.PHONY: build
 build: public
 
 public: hugo ## Build the website
