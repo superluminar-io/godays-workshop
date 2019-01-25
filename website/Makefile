@@ -1,4 +1,3 @@
-WEBSITE := www.go-serverless-workshop.com
 HUGO_VERSION := 0.53
 ifeq ($(shell uname),Darwin)
 	OS := macOS
@@ -13,11 +12,6 @@ clean:
 .PHONY: clobber
 clobber: clean
 	rm -fr hugo
-
-.PHONY: bucket
-bucket:
-	aws s3 mb s3://$(WEBSITE)
-	aws s3 website s3://$(WEBSITE) --index-document index.html --error-document error.html
 
 .PHONY: deploy
 deploy: public guard-WEBSITE_BUCKET guard-CLOUDFRONT_DISTRIBUTION_ID ## Deploys the website to the S3 bucket
@@ -38,6 +32,9 @@ hugo:
 
 develop: hugo ## Start a development server
 	./hugo serve -D
+
+.PHONY build
+build: public
 
 public: hugo ## Build the website
 	./hugo
