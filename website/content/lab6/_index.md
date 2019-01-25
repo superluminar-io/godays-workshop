@@ -1,8 +1,7 @@
 ---
-title: Lab 6 - Distributed Tracing with AWS X-Ray
+title: Lab 6 - Tracing with X-Ray
 weight: 30
 ---
-
 To analyse and debug your serverless application [AWS X-Ray](https://aws.amazon.com/xray/) 
 comes in very handy. It is a distributed tracing tool, that measures 
 how long it takes your application to complete certain tasks. 
