@@ -16,6 +16,7 @@ the [tracing plugin](https://www.npmjs.com/package/serverless-plugin-tracing).
 To instrument your code to send data to X-Ray we use the [aws-sdk-go](https://aws.amazon.com/sdk-for-go/).
 
 To complete this lab you have to:
+
 - Install and activate the tracing plugin
 - Give IAM permission to your function to use X-Ray
 - Instrument your code
