@@ -17,11 +17,11 @@ To instrument your code to send data to X-Ray we use the [aws-sdk-go](https://aw
 
 To complete this lab you have to:
 
-- Install and activate the tracing plugin
-- Give IAM permission to your function to use X-Ray
-- Instrument your code
-- Generate some traces by calling your function
-- Analyse the data within the AWS Console
+ - Install and activate the tracing plugin
+ - Give IAM permissions to your function to use X-Ray
+ - Instrument your code
+ - Generate some traces by calling your function
+ - Analyse the data within the AWS Console
 
 ## IAM Permission to use X-Ray
 
