@@ -15,3 +15,19 @@ deploy: public
 .PHONY: clean
 clean:
 	rm -fr public
+
+.PHONY: guard-%
+guard-%:
+	@ if [ "${${*}}" = "" ]; then \
+	    echo "Environment variable $* not set"; \
+	    exit 1; \
+	fi
+
+.PHONY: cloudformation
+cloudformation: guard-GITHUB_OAUTH_TOKEN guard-SLACK_HOOK_URL
+	aws cloudformation deploy \
+		--stack-name go-serverless-workshop \
+		--region us-east-1 \
+		--template-file cloudformation.yaml \
+		--capabilities CAPABILITY_IAM \
+		--parameter-overrides GithubOauthToken=$(GITHUB_OAUTH_TOKEN) SlackHookUrl=$(SLACK_HOOK_URL)
