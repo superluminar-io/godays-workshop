@@ -1,7 +1,18 @@
 WEBSITE := www.go-serverless-workshop.com
+HUGO_VERSION := 0.53
+ifeq ($(shell uname),Darwin)
+	OS := macOS
+else
+	OS := Linux
+endif
 
-public:
-	hugo -b /
+.PHONY: clean
+clean:
+	rm -fr public tmp
+
+.PHONY: clobber
+clobber: clean
+	rm -fr hugo
 
 .PHONY: bucket
 bucket:
@@ -9,12 +20,10 @@ bucket:
 	aws s3 website s3://$(WEBSITE) --index-document index.html --error-document error.html
 
 .PHONY: deploy
-deploy: public
-	aws s3 sync --acl public-read --sse --delete public s3://$(WEBSITE)
-
-.PHONY: clean
-clean:
-	rm -fr public
+deploy: public guard-WEBSITE_BUCKET guard-CLOUDFRONT_DISTRIBUTION_ID ## Deploys the website to the S3 bucket
+	aws s3 sync public/ s3://$(WEBSITE_BUCKET)/ --delete
+	aws configure set preview.cloudfront true
+	aws cloudfront create-invalidation --distribution-id=$(CLOUDFRONT_DISTRIBUTION_ID) --paths /
 
 .PHONY: guard-%
 guard-%:
@@ -22,6 +31,18 @@ guard-%:
 	    echo "Environment variable $* not set"; \
 	    exit 1; \
 	fi
+
+hugo:
+	mkdir -p tmp
+	curl -LsS https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_$(HUGO_VERSION)_$(OS)-64bit.tar.gz | tar xzf - hugo
+
+develop: hugo ## Start a development server
+	./hugo serve -D
+
+public: hugo ## Build the website
+	./hugo
+
+install: hugo ## Install dependencies (hugo)
 
 .PHONY: cloudformation
 cloudformation: guard-GITHUB_OAUTH_TOKEN guard-SLACK_HOOK_URL

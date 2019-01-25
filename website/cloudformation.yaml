@@ -149,13 +149,13 @@ Resources:
           phases:
             install:
               commands:
-                - (cd website && make install)
+                - make -C website install
             build:
               commands:
-                - (cd website && make build)
+                - make -C website build
             post_build:
               commands:
-                - (cd website && make deploy)
+                - make -C website deploy
 
   DeployWebsiteRole:
     Type: AWS::IAM::Role
