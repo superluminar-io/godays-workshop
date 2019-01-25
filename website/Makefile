@@ -26,7 +26,7 @@ guard-%:
 .PHONY: cloudformation
 cloudformation: guard-GITHUB_OAUTH_TOKEN guard-SLACK_HOOK_URL
 	aws cloudformation deploy \
-		--stack-name go-serverless-workshop \
+		--stack-name go-serverless-workshop-website \
 		--region us-east-1 \
 		--template-file cloudformation.yaml \
 		--capabilities CAPABILITY_IAM \

@@ -307,12 +307,6 @@ Resources:
             Id: Origin
             CustomOriginConfig:
               OriginProtocolPolicy: http-only
-        CacheBehaviors:
-          - PathPattern: pr/*
-            TargetOriginId: Preview
-            ForwardedValues:
-              QueryString: false
-            ViewerProtocolPolicy: redirect-to-https
         DefaultCacheBehavior:
           Compress: true
           DefaultTTL: 300
