@@ -1,0 +1,383 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Deployment pipeline for https://go-serverless-workshop.com including a CDN and HTTPS
+Parameters:
+  GithubOauthToken:
+    Type: String
+  GithubRepoOwner:
+    Type: String
+    Default: superluminar-io
+  GithubRepoName:
+    Type: String
+    Default: godays-workshop
+  GithubRepoBranch:
+    Type: String
+    Default: master
+  ApexDomainName:
+    Type: String
+    Default: go-serverless-workshop.com
+  RedirectDomainName:
+    Type: String
+    Description: All hits on this domain will be redirected to ApexDomainName (usually needed to redirect www. to the APEX domain)
+    Default: www.go-serverless-workshop.com
+  ErrorDocument:
+    Type: String
+    Description: Path to a custom error document in S3
+    Default: /
+  DeploymentStage:
+    Type: String
+    Default: prod
+  SlackHookUrl:
+    Type: String
+    Description: Slack hook to call when AWS CodePipeline finishes
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Source Code Repository
+        Parameters:
+          - GithubRepoOwner
+          - GithubRepoName
+          - GithubRepoBranch
+          - GithubOauthToken
+Conditions:
+  HasErrorDocument: !Not [!Equals [!Ref ErrorDocument, '']]
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: !If [HasErrorDocument, !Ref ErrorDocument, !Ref 'AWS::NoValue']
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource: !Sub arn:aws:s3:::${WebsiteBucket}/*
+  ArtifactStoreBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: BucketOwnerFullControl
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt PipelineRole.Arn
+      ArtifactStore:
+        Location:
+          Ref:
+            ArtifactStoreBucket
+        Type: S3
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              InputArtifacts: []
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: !Ref GithubRepoOwner
+                Repo: !Ref GithubRepoName
+                Branch: !Ref GithubRepoBranch
+                OAuthToken: !Ref GithubOauthToken
+              RunOrder: 1
+        - Name: DeployWebsite
+          Actions:
+          - Name: DeployWebsiteAction
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Version: 1
+              Provider: CodeBuild
+            InputArtifacts:
+              - Name: SourceOutput
+            OutputArtifacts:
+              - Name: DeployWebsiteActionOutput
+            Configuration:
+              ProjectName:
+                Ref: DeployWebsiteBuild
+            RunOrder: 2
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  DeployWebsiteBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/ubuntu-base:14.04
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: WEBSITE_BUCKET
+            Value: !Ref WebsiteBucket
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
+            Value: !Ref WebsiteCdn
+          - Name: LC_CTYPE
+            Value: en_US.UTF-8
+      Name: !Sub DeployWebsiteBuild-${DeploymentStage}
+      ServiceRole: !Ref DeployWebsiteRole
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.1
+          phases:
+            install:
+              commands:
+                - (cd website && make install)
+            build:
+              commands:
+                - (cd website && make build)
+            post_build:
+              commands:
+                - (cd website && make deploy)
+
+  DeployWebsiteRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  CodePipelineToSlackEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: CodePipeline event that triggers on state changes
+      EventPattern:
+        source:
+          - "aws.codepipeline"
+        "detail-type":
+          - "CodePipeline Pipeline Execution State Change"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt CodePipelineToSlackLambdaFunction.Arn
+          Id: lambda
+
+  CodePipelineToSlackLambdaFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref CodePipelineToSlackLambdaFunction
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt CodePipelineToSlackEventRule.Arn 
+
+  CodePipelineToSlackLambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: 'lambda.amazonaws.com'
+          Action: 'sts:AssumeRole'
+      Policies:
+      - PolicyName: logs
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - 'logs:CreateLogGroup'
+            - 'logs:CreateLogStream'
+            - 'logs:PutLogEvents'
+            Resource: 'arn:aws:logs:*:*:*'
+      - PolicyName: codepipeline
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - 'codepipeline:GetPipelineExecution'
+            Resource: 'arn:aws:codepipeline:*:*:*'
+
+  CodePipelineToSlackLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          import boto3
+          import json
+          import logging
+          import os
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+          
+          pipeline_client = boto3.client('codepipeline')
+          
+          color_map = {'Succeeded': 'good', 'Failed': 'danger'}
+          
+          def handler(event, _):
+              logger.info("Got event: %s", event)
+              if event['detail']['state'] not in ('SUCCEEDED', 'FAILED'):
+                  logger.info("Skipping event state: %s", event['detail']['state'])
+                  return
+              pipeline_name = event['detail']['pipeline']
+              pipeline_execution_id = event['detail']['execution-id']
+              execution = pipeline_client.get_pipeline_execution(pipelineName=pipeline_name, pipelineExecutionId=pipeline_execution_id)['pipelineExecution']
+              logger.info("Pipeline info: %s", execution)
+              text = '{0}: {1}'.format(pipeline_name, execution['status'])
+              slack_message = {
+                  'username': 'AWS CodePipeline',
+                  'as_user': False,
+                  'icon_emoji': ':tophat:',
+                  'attachments': [
+                          {
+                              'title': 'go-serverless-workshop.com deployment',
+                              'title_link': 'https://console.aws.amazon.com/codepipeline/home?region=us-east-1#/view/{}'.format(pipeline_name),
+                              'text': text,
+                              'color': color_map.get(execution['status'], '#c0c0c0'),
+                          }
+                  ]
+              }
+              if execution['artifactRevisions']:
+                  fields = [
+                      {
+                          "title": "Summary",
+                          "value": execution['artifactRevisions'][0]['revisionSummary'],
+                          "short": False
+                      },
+                      {
+                          "title": "Revision",
+                          "value": execution['artifactRevisions'][0]['revisionUrl'],
+                          "short": False
+                      }
+                  ]
+                  slack_message['attachments'][0]['fields'] = fields
+              req = Request(os.environ['SLACK_HOOK_URL'], json.dumps(slack_message).encode('utf8'))
+              logger.info("Sending request to Slack: %s", slack_message)
+              try:
+                  response = urlopen(req)
+                  response.read()
+                  logger.info("Message posted")
+              except HTTPError as e:
+                  logger.error("Request failed: %d %s", e.code, e.reason)
+              except URLError as e:
+                  logger.error("Server connection failed: %s", e.reason)
+      Handler: 'index.handler'
+      MemorySize: 128
+      Role: !GetAtt CodePipelineToSlackLambdaFunctionRole.Arn 
+      Runtime: 'python3.6'
+      Timeout: 60
+      Environment:
+        Variables:
+          SLACK_HOOK_URL: !Ref SlackHookUrl 
+
+  WebsiteCdn:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+         - !Ref ApexDomainName
+        PriceClass: PriceClass_100
+        Origins:
+          - DomainName: !Sub ${WebsiteBucket}.s3-website-${AWS::Region}.amazonaws.com
+            Id: Origin
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          Compress: true
+          DefaultTTL: 300
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: Origin
+          ViewerProtocolPolicy: redirect-to-https
+        Enabled: true
+        ViewerCertificate:
+          AcmCertificateArn: !Ref WebsiteCertificate
+          SslSupportMethod: sni-only
+        HttpVersion: http2
+
+  WebsiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref ApexDomainName
+      DomainValidationOptions:
+        - DomainName: !Ref RedirectDomainName
+          ValidationDomain: !Ref ApexDomainName
+        - DomainName: !Ref ApexDomainName
+          ValidationDomain: !Ref ApexDomainName
+      SubjectAlternativeNames:
+        - !Ref RedirectDomainName
+
+  S3BucketRedirect:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      WebsiteConfiguration:
+        RedirectAllRequestsTo:
+          HostName: !Ref ApexDomainName
+          Protocol: https
+  CloudFrontDistributionRedirect:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+         - !Ref RedirectDomainName
+        PriceClass: PriceClass_100
+        Origins:
+          - DomainName: !Sub ${S3BucketRedirect}.s3-website-${AWS::Region}.amazonaws.com
+            Id: Origin
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          Compress: true
+          DefaultTTL: 300
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: Origin
+          ViewerProtocolPolicy: redirect-to-https
+        Enabled: true
+        ViewerCertificate:
+          AcmCertificateArn: !Ref WebsiteCertificate
+          SslSupportMethod: sni-only
+        HttpVersion: http2
+
+  DNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Sub ${ApexDomainName}.
+      RecordSets:
+      - Name: !Ref ApexDomainName
+        Type: A
+        AliasTarget:
+          # Magic AWS number:  For CloudFront, use Z2FDTNDATAQYW2.
+          HostedZoneId: Z2FDTNDATAQYW2
+          DNSName: !GetAtt WebsiteCdn.DomainName
+      - Name: !Ref RedirectDomainName
+        Type: A
+        AliasTarget:
+          # Magic AWS number:  For CloudFront, use Z2FDTNDATAQYW2.
+          HostedZoneId: Z2FDTNDATAQYW2
+          DNSName: !GetAtt CloudFrontDistributionRedirect.DomainName

@@ -1,0 +1,9 @@
+theme = "hugo-theme-learn"
+languageCode = "en-us"
+title = "superluminar - Go Serverless Workshop"
+
+[params]
+themeVariant = "blue"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
