@@ -30,8 +30,10 @@ This compiles the functions `hello` and `world` and places the binaries in the `
 To deploy the functions and create the AWS components (Lambda function, API Gateway, DNS Entries) we run:
 
 ```
-serverless deploy
+make deploy
 ```
+
+*Hint*: Pay attention to the log output. Especially lines prefixed with _CloudFormation - ..._
 
 ## Run the functions
 
