@@ -7,3 +7,13 @@ themeVariant = "blue"
 
 [outputs]
 home = [ "HTML", "RSS", "JSON"]
+
+[[menu.shortcuts]]
+name = "<i class='fab fa-github'></i> Github repo"
+url = "https://github.com/superluminar-io/godays-workshop"
+weight = 10
+
+[[menu.shortcuts]]
+name = "<i class='far fa-file-alt'></i> Serverless docs"
+url = "https://serverless.com/framework/docs/providers/aws/"
+weight = 20
