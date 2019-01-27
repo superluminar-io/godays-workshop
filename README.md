@@ -6,12 +6,12 @@ Go to https://go-serverless-workshop.com to start the workshop.
 
 # Website
 
-The website is built with Hugo and uses the [http://github.com/matcornic/hugo-theme-learn](hugo-theme-learn) theme. Code is in [website/](website).
-Run `make present` to start the presentation.
+The website is built with Hugo and uses the [hugo-theme-learn](http://github.com/matcornic/hugo-theme-learn) theme. Code is in [website/](website).
 
 # Slides
 
 Workshop slides are in the root folder: `*.slides`. They use [present](https://godoc.org/golang.org/x/tools/present).
+Run `make present` to start the presentation. Assumes a working Go installation.
 
 # Example code
 
