@@ -37,7 +37,7 @@ develop: hugo ## Start a development server
 build: public
 
 public: hugo ## Build the website
-	./hugo
+	./hugo -b https://go-serverless-workshop.com/
 
 install: hugo ## Install dependencies (hugo)
 
