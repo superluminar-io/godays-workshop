@@ -2,6 +2,9 @@
 title: Lab 1 - Basics
 weight: 10
 ---
+
+In this lab we will create our first Serverless application and explore it.
+
 ## Bootstrap serverless app
 
 First we bootstrap the Serverless "Hello World" example.
@@ -42,10 +45,18 @@ Pay attention to the log output. Especially lines prefixed with _CloudFormation 
 ## Run the functions
 
 To run the function we can use either the HTTP endpoint (via API Gateway) or use the Serverless tool to invoke the function directly.
+Try it out. Figure out the URL to your service by taking a look at the shell output from the command you ran above.
+
+{{% expand "Need help?" %}}
 ```shell
+# Find the endpoint in the output
 ENDPOINT=$(sls info -v | grep ServiceEndpoint: | cut -d ' ' -f2)
+# Run curl
 curl ${ENDPOINT}/hello
 
+# Or invoke the function directly.
 serverless invoke -f hello
 ```
+{{% /expand %}}
 
+Do you notice any differences when running the function via `curl` or when you invoke it directly?
