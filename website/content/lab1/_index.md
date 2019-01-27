@@ -35,7 +35,9 @@ make deploy
 
 This will run `serverless deploy` to deploy our functions.
 
-*Hint*: Pay attention to the log output. Especially lines prefixed with _CloudFormation - ..._
+{{% notice tip %}}
+Pay attention to the log output. Especially lines prefixed with _CloudFormation - ..._
+{{% /notice %}}
 
 ## Run the functions
 
