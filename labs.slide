@@ -19,7 +19,7 @@ superluminar GmbH
 
 * Lab 2
 
-- Modify `hello` function to accept a `name` parameter
+- Modify the *hello* function to accept a *name* parameter and respond with a greeting
 - Create some log messages
 - Find out how to display log messages
 
