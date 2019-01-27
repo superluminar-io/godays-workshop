@@ -23,11 +23,19 @@ $ curl -v http://$ENDPOINT/${short-url}
 < Location: https://godays.io
 ```
 
-Here is an integration test you can run against your service to see if it works.
-
-- Download [integration_test.go](https://raw.githubusercontent.com/superluminar-io/godays-workshop/master/integration_test.go)
-- Copy to root of your project
-- Run it with: `go test -integrationTest -endpoint=$(sls info -v | awk '/ServiceEndpoint/ { print $2 }')`
+{{<mermaid>}}
+sequenceDiagram
+    participant Browser
+    participant APIGateway
+    participant Lambda
+    participant DynamoDB
+    Browser->>APIGateway: POST /create-url
+    APIGateway->>Lambda: Invoke
+    Lambda->>DynamoDB: PutItem
+    DynamoDB-->>Lambda: OK
+    Lambda-->>APIGateway: {"url": "foo"}
+    APIGateway-->>Browser: HTTP 201 Created {"url": "foo"}
+{{< /mermaid >}}
 
 ## Hints
 
@@ -37,6 +45,7 @@ Here is an integration test you can run against your service to see if it works.
 - Inject the DynamoDB table via environment variables
 - Using path parameters with API Gateway and Lambda
 - Generate a short unique ID for the URL
+- Run the integration test to see if your service works as expected
 
 ### Use the aws-sdk-go with DynamoDB
 
@@ -159,4 +168,13 @@ func Shorten(u string) (string, error) {
 	return strconv.FormatUint(hash.Sum64(), 36), nil
 }
 ```
+
+### Run integration test
+
+Here is an integration test you can run against your service to see if it works.
+
+- Download [integration_test.go](https://raw.githubusercontent.com/superluminar-io/godays-workshop/master/integration_test.go)
+- Copy to root of your project
+- Run it with: `go test -integrationTest -endpoint=$(sls info -v | awk '/ServiceEndpoint/ { print $2 }')`
+
 
