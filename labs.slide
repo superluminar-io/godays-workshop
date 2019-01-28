@@ -49,3 +49,19 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
 - Use `github.com/stretchr/testify/mock` (or what ever framework you prefer)
 - Test what happens when your handler can't find the short url in your storage
 
+* Lab 5
+
+- Create a new function
+- Create a new table
+- Hook up the function to the DynamoDB stream of the url-shortener table
+- Fetch preview using e.g. https://github.com/badoux/goscraper
+- Save the preview to the new table
+
+
+* Lab 6
+
+- Install and activate the tracing plugin
+- Give IAM permissions to your function to use X-Ray
+- Instrument your code
+- Generate some traces by calling your function
+- Checkout your traces using the AWS Console
