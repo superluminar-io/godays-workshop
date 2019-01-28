@@ -62,6 +62,6 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
 
 - Install and activate the tracing plugin
 - Give IAM permissions to your function to use X-Ray
-- Instrument your code
+- Instrument your code (use version > v1.0.0-rc.1 of `github.com/aws/aws-xray-sdk-go`)
 - Generate some traces by calling your function
 - Checkout your traces using the AWS Console
