@@ -4,12 +4,12 @@ Using AWS Lambda with Go
 
 superluminar GmbH
 
-* Lab 0 - Install dependencies
+* Lab 0 - Form teams
 
-- go
-- node
-- awscli
-- serverless
+- Form teams of 3.
+- For each lab write down key questions (max 2!).
+- Stick them to the wall.
+- We'll go through the questions after each lab.
 
 * Lab 1
 
