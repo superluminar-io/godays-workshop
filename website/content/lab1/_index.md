@@ -39,7 +39,9 @@ make deploy
 This will run `serverless deploy` to deploy our functions.
 
 {{% notice tip %}}
-Pay attention to the log output. Especially lines prefixed with _CloudFormation - ..._
+Pay attention to the log output. Especially lines prefixed with _CloudFormation - ..._.
+To take a look under the hood look into the `.serverless` folder. You'll see two JSON
+files. This is the Cloudformation stack for your application.
 {{% /notice %}}
 
 ## Run the functions
