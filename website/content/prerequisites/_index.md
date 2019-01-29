@@ -49,5 +49,5 @@ npm install -g serverless
 We will use a serverless template that uses `dep` for dependency  management.
 
 ```shell
-go get github.com/golang/dep
+go get -u github.com/golang/dep/cmd/dep
 ```
