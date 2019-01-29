@@ -232,6 +232,38 @@ You configure a Serverless project using `serverless.yml`.
 
 .link https://www.jeremydaly.com/serverless-microservice-patterns-for-aws/ Serverless Design Patterns
 
+* API Gateway
+
+- Unified endpoint
+- Multiple backends (Lambda, EC2, self-hosted)
+- Throttling
+- Caching
+- Schema transformation (XML->JSON etc.)
+- Authentication
+- Cognito user pools
+
+* Lambda
+
+- Function as a service
+- Event driven
+- Pay per execution time per 100 ms
+- Max execution time: 15 minutes
+- Multiple languages (Go, Python, Java, NodeJS)
+- Layers (like a Docker image)
+- Custom run times
+- Scale memory/CPU
+- BEWARE: cold starts
+
+* DynamoDB
+
+- NoSQL database
+- schemaless
+- Streams
+- Indices
+- Backup
+- Transactions
+- Autoscaling or provisioned throughput
+
 * Serverless and Cloudformation
 
 - Behind the scenes `Serverless` uses `Cloudformation`
