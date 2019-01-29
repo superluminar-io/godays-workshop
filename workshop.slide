@@ -7,7 +7,7 @@ superluminar GmbH
 * Prequisites
 
 - Go installation
-- Node installation
+- NodeJS installation
 - Working AWS credentials
 - dep
 
@@ -268,7 +268,6 @@ You configure a Serverless project using `serverless.yml`.
 - Indices
 - Backup
 - Transactions
-- Autoscaling or provisioned throughput
 
 * Serverless and Cloudformation
 
