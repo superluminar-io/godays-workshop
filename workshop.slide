@@ -32,6 +32,18 @@ superluminar GmbH
  
  Serverless: Successfully generated boilerplate for template: "aws-go-dep"
 
+* Our first application
+
+ $ tree
+  .
+  ├── Gopkg.toml
+  ├── Makefile
+  ├── hello
+  │   └── main.go
+  ├── serverless.yml
+  └── world
+      └── main.go
+
 * Build it!
 
  $ make
