@@ -7,7 +7,7 @@ Modify the `hello` function to take a query parameter and print a friendly greet
 
 ```
 ENDPOINT=$(sls info -v | grep ServiceEndpoint: | cut -d ' ' -f2)
-curl ${ENDPOINT}/hello?name=World
+curl -XPOST ${ENDPOINT}/hello?name=World
 Hello World
 ```
 
