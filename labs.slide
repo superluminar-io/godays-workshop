@@ -47,6 +47,83 @@ Implement a URL shortener using `DynamoDB` for storage with two functions.
  < HTTP/1.1 302 Found
  < Location: https://godays.io
 
+* Things you'll need
+
+- Use the aws-sdk-go to talk to DynamoDB
+- Create a DynamoDB table using Cloudformation
+- Give your Lambda functions permissions to access the DynamoDB table with IAM
+- Inject the DynamoDB table via environment variables
+- Using path parameters with API Gateway and Lambda
+
+* Using DynamoDB via the aws-sdk-go
+ import (
+ 	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/aws/aws-sdk-go/aws/session"
+ 	"github.com/aws/aws-sdk-go/service/dynamodb"
+ )
+.code ./create-url/main.go 48,61
+
+* Creating a DynamoDB table with Cloudformation
+
+`serverless.yml` supports arbitrary Cloudformation resources under the `resources` key.
+
+ resources:
+   Resources:
+     DynamoDBTable:
+       Type: AWS::DynamoDB::Table
+       Properties:
+         TableName: url-shortener
+         KeySchema:
+           - AttributeName: "id"
+             KeyType: "HASH"
+         ProvisionedThroughput:
+           ReadCapacityUnits: "1"
+           WriteCapacityUnits: "1"
+         AttributeDefinitions:
+           - AttributeName: "id"
+             AttributeType: "S"
+
+* Give your Lambda functions permissions to access DynamoDB
+- Every AWS Lambda function needs permission to interact with other AWS infrastructure resources
+- Permissions are set via an AWS IAM Role which is automatically created and is shared by all of your functions
+- You can set additional permissions via the `serverless.yml` file
+
+ provider:
+   iamRoleStatements:
+     -  Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+          - "dynamodb:GetItem"
+        Resource:
+          Fn::GetAtt:
+            - DynamoDBTable
+            - Arn
+
+* Inject the DynamoDB table via environment variables
+
+ provider:
+   environment:
+     DYNAMO_DB_TABLE:
+       Ref: DynamoDBTable # References resource by name
+
+ resources:
+   Resources:
+     DynamoDBTable:
+       Type: AWS::DynamoDB::Table
+
+* Configure path parameters for your function
+
+ get-url:
+   handler: bin/get-url
+   events:
+     - http:
+         path: /{short_url}
+         method: get
+         request:
+           parameters:
+             paths:
+               short_url: true
+
 * Lab 4
 
 - Write a unit test to mock out AWS dependencies
