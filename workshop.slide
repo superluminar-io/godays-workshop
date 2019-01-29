@@ -45,7 +45,7 @@ superluminar GmbH
 
 * Build it!
 
- $ make
+ $ make build
  dep ensure -v
  Root project is "github.com/superluminar-io/godays-workshop"
   2 transitively valid internal packages
@@ -66,21 +66,28 @@ superluminar GmbH
  env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
 
 * Deploy it!
- $ severless deploy
- Serverless: Packaging service...
- Serverless: Excluding development dependencies...
- Serverless: Creating Stack...
- Serverless: Checking Stack create progress...
- .....
- Serverless: Stack create finished...
- Serverless: Uploading CloudFormation file to S3...
- Serverless: Uploading artifacts...
- Serverless: Uploading service .zip file to S3 (10.78 MB)...
- Serverless: Validating template...
- Serverless: Updating Stack...
- Serverless: Checking Stack update progress...
+ $ make deploy
+   rm -rf ./bin ./vendor Gopkg.lock
+   dep ensure -v
+   Root project is "github.com/superluminar-io/godays-workshop"
+    6 transitively valid internal packages
+    10 external packages imported from 4 projects
+   (0)   ✓ select (root)
+   (1)	? attempt github.com/aws/aws-lambda-go with 2 pkgs; 14 versions to try
+   (1)	    try github.com/aws/aws-lambda-go@v1.8.1
+   (1)	✓ select github.com/aws/aws-lambda-go@v1.8.1 w/4 pkgs
+   (2)	? attempt github.com/sirupsen/logrus with 1 pkgs; 57 versions to try
+   (2)	    try github.com/sirupsen/logrus@v1.3.0
+   (2)	✓ select github.com/sirupsen/logrus@v1.3.0 w/1 pkgs
+   (3)	? attempt github.com/konsorten/go-windows-terminal-sequences with 1 pkgs; 2 versions to try
+   ...
+   env GOOS=linux go build -ldflags="-s -w" -o bin/hello hello/main.go
+   env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
 
 * Deploy it!
+
+  ...
+  sls deploy --verbose
   Serverless: Stack update finished...
   Service Information
   service: godays-workshop
