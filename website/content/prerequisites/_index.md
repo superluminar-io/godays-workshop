@@ -43,3 +43,11 @@ This tool allows us to build and deploy [Serverless](https://en.wikipedia.org/wi
 ```shell
 npm install -g serverless
 ```
+
+## Install dep
+
+We will use a serverless template that uses `dep` for dependency  management.
+
+```shell
+go get github.com/golang/dep
+```
