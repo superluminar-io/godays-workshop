@@ -18,3 +18,8 @@ weight = 10
 name = "<i class='far fa-file-alt'></i> Serverless docs"
 url = "https://serverless.com/framework/docs/providers/aws/"
 weight = 20
+
+[[menu.shortcuts]]
+name = "<i class='far fa-copyright'></i> Impressum"
+url = "/impressum"
+weight = 30
